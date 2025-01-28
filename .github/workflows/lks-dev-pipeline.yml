@@ -96,7 +96,7 @@ jobs:
           # check .aws directory
           if [ ! -d "/home/ec2-user/.aws" ]; then
             # create the .aws directory
-            mkdir /home/ec2-user/.aws
+            mkdir -p /home/ec2-user/.aws
             
             # configure aws credentials config
             echo "[default]" >> /home/ec2-user/.aws/credentials
@@ -126,7 +126,7 @@ jobs:
           # check /root/.docker directory 
           if [ ! -d "/root/.docker" ]; then
             # create .docker directory
-            sudo mkdir /root/.docker
+            sudo mkdir -p /root/.docker
 
             # copy config.json to /root/.docker/
             sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
@@ -158,7 +158,7 @@ jobs:
           # check .aws directory
           if [ ! -d "/home/ec2-user/.aws" ]; then
             # create the .aws directory
-            mkdir /home/ec2-user/.aws
+            mkdir -p /home/ec2-user/.aws
             
             # configure aws credentials config
             echo "[default]" >> /home/ec2-user/.aws/credentials
@@ -188,7 +188,7 @@ jobs:
           # check /root/.docker directory 
           if [ ! -d "/root/.docker" ]; then
             # create .docker directory
-            sudo mkdir /root/.docker
+            sudo mkdir -p /root/.docker
 
             # copy config.json to /root/.docker/
             sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
