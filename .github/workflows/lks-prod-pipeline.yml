@@ -1,0 +1,51 @@
+name: LKS Production Pipeline
+
+on:
+  push:
+    branches:
+      - "prod"
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: voting-app
+  ENV: "prod"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build Image for Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t ${{ env.AWS_REGION }}/voting-app:prod-latest .
+          docker push ${{ env.AWS_REGION }}/voting-app:prod-latest
+
+  deploy:
+    name: Deploy to ECS and Notify
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Update ECS Task Definition
+        run: |
+          aws ecs update-service --cluster my-ecs-cluster --service my-service --force-new-deployment
+
+      - name: Send Notification
+        run: |
+          aws sns publish --topic-arn arn:aws:sns:${{ env.AWS_REGION }}:123456789012:MyTopic --message "Deployment to production was successful"

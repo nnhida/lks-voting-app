@@ -1,0 +1,74 @@
+name: LKS Development Pipeline
+
+on:
+  push:
+    branches:
+      - "dev"
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: voting-app
+  ENV: "dev"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build Image for Development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t ${{ env.AWS_REGION }}/voting-app:dev-latest .
+          docker push ${{ env.AWS_REGION }}/voting-app:dev-latest
+
+  pull-image-master:
+    name: Pull Image on Master
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Pull updated image on Master
+        run: |
+          ssh master "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
+
+  pull-image-node1:
+    name: Pull Image on Node1
+    runs-on: ubuntu-latest
+    needs: pull-image-master
+    steps:
+      - name: Pull updated image on Node1
+        run: |
+          ssh node1 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
+
+  pull-image-node2:
+    name: Pull Image on Node2
+    runs-on: ubuntu-latest
+    needs: pull-image-node1
+    steps:
+      - name: Pull updated image on Node2
+        run: |
+          ssh node2 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
+
+  deploy:
+    name: Deploy to Docker Swarm
+    runs-on: ubuntu-latest
+    needs: pull-image-node2
+    steps:
+      - name: Deploy Application
+        run: |
+          ssh master "docker stack deploy --compose-file docker-compose.yml stackdemo"
