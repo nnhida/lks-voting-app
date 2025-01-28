@@ -111,7 +111,7 @@ jobs:
           WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
+          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
   node2:
     name: Pull Image on node2
@@ -145,7 +145,7 @@ jobs:
           WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
+          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
   deploy:
     name: Deploy Application into docker swarm
