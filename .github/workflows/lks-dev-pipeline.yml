@@ -45,39 +45,39 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
         echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG"
 
-  master:
-    name: Pull Image on master
-    runs-on: master
-    needs: build
-    steps:
-      - name: Update runner's docker Version, as worker module requires it
-        run: |
-          docker --version
+  # master:
+  #   name: Pull Image on master
+  #   runs-on: master
+  #   needs: build
+  #   steps:
+  #     - name: Update runner's docker Version, as worker module requires it
+  #       run: |
+  #         docker --version
       
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS Credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
-        run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+  #     - name: Pull image
+  #       id: pull-image
+  #       env:
+  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+  #         WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+  #       # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+  #       run: |
+  #         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
   node1:
     name: Pull Image on node1
@@ -98,6 +98,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: test 
+        run: |
+          cat /home/ec2-user/.aws/credentials
 
       - name: Login to Amazon ECR
         id: login-ecr
