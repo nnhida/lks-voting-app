@@ -1,4 +1,4 @@
-name: lks-dev-pipeline
+name: lks-pipeline-dev
 
 on:
   push:
