@@ -149,7 +149,7 @@ jobs:
     name: Deploy Application into docker swarm
     runs-on: master
     needs: 
-      - master
+      # - master
       - node1
       - node2
     steps:
