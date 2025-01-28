@@ -91,16 +91,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        run: |
-          mkdir /home/ec2-user/.aws
-          echo "[default]" >> /home/ec2-user/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
-          echo "[default]" >> /home/ec2-user/.aws/config
-          echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-          echo "output = json" >> /home/ec2-user/.aws/config
+      # - name: Configure AWS Credentials
+      #   run: |
+      #     mkdir /home/ec2-user/.aws
+      #     echo "[default]" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+      #     echo "[default]" >> /home/ec2-user/.aws/config
+      #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+      #     echo "output = json" >> /home/ec2-user/.aws/config
         # uses: aws-actions/configure-aws-credentials@v1
         # with:
         #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
@@ -135,16 +135,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        run: |
-          mkdir /home/ec2-user/.aws
-          echo "[default]" >> /home/ec2-user/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
-          echo "[default]" >> /home/ec2-user/.aws/config
-          echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-          echo "output = json" >> /home/ec2-user/.aws/config
+      # - name: Configure AWS Credentials
+      #   run: |
+      #     mkdir /home/ec2-user/.aws
+      #     echo "[default]" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+      #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+      #     echo "[default]" >> /home/ec2-user/.aws/config
+      #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+      #     echo "output = json" >> /home/ec2-user/.aws/config
         # uses: aws-actions/configure-aws-credentials@v1
         # with:
         #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
