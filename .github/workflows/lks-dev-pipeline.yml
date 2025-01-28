@@ -1,4 +1,4 @@
-name: LKS Development Pipeline
+name: deploy_to_dev.yml
 
 on:
   push:
@@ -16,10 +16,10 @@ permissions:
 
 jobs:
   build:
-    name: Build Image for Development
+    name: Build application image
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
@@ -38,7 +38,7 @@ jobs:
           docker push ${{ env.AWS_REGION }}/voting-app:dev-latest
 
   pull-image-master:
-    name: Pull Image on Master
+    name: Pull Image on master
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -47,27 +47,30 @@ jobs:
           ssh master "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
 
   pull-image-node1:
-    name: Pull Image on Node1
+    name: Pull Image on node1
     runs-on: ubuntu-latest
-    needs: pull-image-master
+    needs: build
     steps:
       - name: Pull updated image on Node1
         run: |
           ssh node1 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
 
   pull-image-node2:
-    name: Pull Image on Node2
+    name: Pull Image on node2
     runs-on: ubuntu-latest
-    needs: pull-image-node1
+    needs: build
     steps:
       - name: Pull updated image on Node2
         run: |
           ssh node2 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
 
   deploy:
-    name: Deploy to Docker Swarm
+    name: Deploy Application into Docker Swarm
     runs-on: ubuntu-latest
-    needs: pull-image-node2
+    needs: 
+      - pull-image-master
+      - pull-image-node1
+      - pull-image-node2
     steps:
       - name: Deploy Application
         run: |
