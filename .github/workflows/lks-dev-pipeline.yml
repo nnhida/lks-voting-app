@@ -16,10 +16,44 @@ permissions:
 
 jobs:
   build:
-    name: Build application image
+    name: Build Image Development
     runs-on: ubuntu-latest
+    environment: Development
     steps:
-      - name: Checkout repository
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f worker/Dockerfile ./worker
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+        echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG"
+
+  master:
+    name: Pull Image on master
+    runs-on: master
+    steps:
+      - name: Update runner's docker Version, as worker module requires it
+        run: |
+          docker --version
+      
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
@@ -27,51 +61,101 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Pull image
+        id: pull-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          docker build -t ${{ env.AWS_REGION }}/voting-app:dev-latest .
-          docker push ${{ env.AWS_REGION }}/voting-app:dev-latest
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
-  pull-image-master:
-    name: Pull Image on master
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Pull updated image on Master
-        run: |
-          ssh master "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
-
-  pull-image-node1:
+  node1:
     name: Pull Image on node1
-    runs-on: ubuntu-latest
-    needs: build
+    runs-on: node1
     steps:
-      - name: Pull updated image on Node1
+      - name: Update runner's docker Version, as worker module requires it
         run: |
-          ssh node1 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
+          docker --version
+      
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  pull-image-node2:
-    name: Pull Image on node2
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Pull updated image on Node2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Pull image
+        id: pull-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          ssh node2 "docker pull ${{ env.AWS_REGION }}/voting-app:dev-latest"
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+
+  node2:
+    name: Pull Image on node2
+    runs-on: node2
+    steps:
+      - name: Update runner's docker Version, as worker module requires it
+        run: |
+          docker --version
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Pull image
+        id: pull-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
   deploy:
-    name: Deploy Application into Docker Swarm
-    runs-on: ubuntu-latest
-    needs: 
-      - pull-image-master
-      - pull-image-node1
-      - pull-image-node2
+    name: Deploy Application into docker swarm
+    runs-on: master
     steps:
-      - name: Deploy Application
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy application images to Docker Swarm
         run: |
-          ssh master "docker stack deploy --compose-file docker-compose.yml stackdemo"
+          docker node ls
+          docker service ls
+          docker stack ls
+          docker stack rm stackdemo
+          sleep 30
+          docker stack deploy --compose-file docker-stack.yml stackdemo
