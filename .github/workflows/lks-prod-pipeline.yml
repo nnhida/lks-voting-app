@@ -19,64 +19,67 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build Image Development
-    runs-on: ubuntu-latest
-    environment: Development
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  test:
+    run: |
+      pwd
+  # build:
+  #   name: Build Image Development
+  #   runs-on: ubuntu-latest
+  #   environment: Development
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
-    - name: Configure AWS Credentials
-      run: |
-        # check .aws directory
-        if [ ! -d "/home/ec2-user/.aws" ]; then
-          # create the .aws directory
-          sudo mkdir -p /home/ec2-user/.aws
+  #   - name: Configure AWS Credentials
+  #     run: |
+  #       # check .aws directory
+  #       if [ ! -d "/home/ec2-user/.aws" ]; then
+  #         # create the .aws directory
+  #         sudo mkdir -p /home/ec2-user/.aws
           
-          # configure aws credentials config
-          sudo echo "[default]" >> /home/ec2-user/.aws/credentials
-          sudo echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-          sudo echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-          sudo echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+  #         # configure aws credentials config
+  #         sudo echo "[default]" >> /home/ec2-user/.aws/credentials
+  #         sudo echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+  #         sudo echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+  #         sudo echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
           
-          sudo echo "[default]" >> /home/ec2-user/.aws/config
-          sudo echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-          sudo echo "output = json" >> /home/ec2-user/.aws/config
-        else
-          echo ".aws directory already exists, skipping creation."
-        fi
-      # uses: aws-actions/configure-aws-credentials@v1
-      # with:
-      #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-      #   aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-      #   aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-      #   aws-region: ${{ env.AWS_REGION }}
+  #         sudo echo "[default]" >> /home/ec2-user/.aws/config
+  #         sudo echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+  #         sudo echo "output = json" >> /home/ec2-user/.aws/config
+  #       else
+  #         echo ".aws directory already exists, skipping creation."
+  #       fi
+  #     # uses: aws-actions/configure-aws-credentials@v1
+  #     # with:
+  #     #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #     #   aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #     #   aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  #     #   aws-region: ${{ env.AWS_REGION }}
 
-    - name: Login to Amazon ECR
-      # id: login-ecr
-      # uses: aws-actions/amazon-ecr-login@v1
-      run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 342942590686.dkr.ecr.us-east-1.amazonaws.com
+  #   - name: Login to Amazon ECR
+  #     # id: login-ecr
+  #     # uses: aws-actions/amazon-ecr-login@v1
+  #     run: |
+  #       aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 342942590686.dkr.ecr.us-east-1.amazonaws.com
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
-      run: |
-        docker build -t 342942590686.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$WORKER_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f worker/Dockerfile ./worker
-        docker push 342942590686.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
-        echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG"
+  #   - name: Build, tag, and push image to Amazon ECR
+  #     id: build-image
+  #     env:
+  #       WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
+  #     run: |
+  #       docker build -t 342942590686.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$WORKER_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f worker/Dockerfile ./worker
+  #       docker push 342942590686.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+  #       echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG"
 
-  deploy:
-    name: Deploy to ECS and Notify
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Update ECS Task Definition
-        run: |
-          aws ecs update-service --cluster my-ecs-cluster --service my-service --force-new-deployment
+  # deploy:
+  #   name: Deploy to ECS and Notify
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Update ECS Task Definition
+  #       run: |
+  #         aws ecs update-service --cluster my-ecs-cluster --service my-service --force-new-deployment
 
-      - name: Send Notification
-        run: |
-          aws sns publish --topic-arn ${{ secrets.AWS_SNS_ARN }} --message "Deployment to production was successful"
+  #     - name: Send Notification
+  #       run: |
+  #         aws sns publish --topic-arn ${{ secrets.AWS_SNS_ARN }} --message "Deployment to production was successful"
