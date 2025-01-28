@@ -121,7 +121,7 @@ jobs:
         id: pull-image
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
+          docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
   node2:
     name: Pull Image on node2
@@ -161,7 +161,7 @@ jobs:
         id: pull-image
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
+          docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
   deploy:
     name: Deploy Application into docker swarm
