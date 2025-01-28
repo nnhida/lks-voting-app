@@ -48,6 +48,7 @@ jobs:
   master:
     name: Pull Image on master
     runs-on: master
+    needs: build
     steps:
       - name: Update runner's docker Version, as worker module requires it
         run: |
@@ -81,6 +82,7 @@ jobs:
   node1:
     name: Pull Image on node1
     runs-on: node1
+    needs: build
     steps:
       - name: Update runner's docker Version, as worker module requires it
         run: |
@@ -114,6 +116,7 @@ jobs:
   node2:
     name: Pull Image on node2
     runs-on: node2
+    needs: build
     steps:
       - name: Update runner's docker Version, as worker module requires it
         run: |
@@ -147,6 +150,10 @@ jobs:
   deploy:
     name: Deploy Application into docker swarm
     runs-on: master
+    needs: 
+      - master
+      - node1
+      - node2
     steps:
       - name: Checkout
         uses: actions/checkout@v3
