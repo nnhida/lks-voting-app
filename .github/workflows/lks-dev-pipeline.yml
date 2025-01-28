@@ -120,7 +120,7 @@ jobs:
         run: |
           sudo mkdir /root/.docker
           sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-          sudo cat /home/root/.docker/config.json
+          sudo cat /root/.docker/config.json
 
       - name: Pull image
         id: pull-image
