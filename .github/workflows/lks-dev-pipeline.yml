@@ -106,13 +106,9 @@ jobs:
 
       - name: Pull image
         id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+          sudo docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
   node2:
     name: Pull Image on node2
@@ -136,17 +132,14 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 342942590686.dkr.ecr.us-east-1.amazonaws.com
 
       - name: Pull image
         id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+          sudo docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
   deploy:
     name: Deploy Application into docker swarm
