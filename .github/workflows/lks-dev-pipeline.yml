@@ -79,52 +79,50 @@ jobs:
   #       run: |
   #         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
 
-  node1:
-    name: Pull Image on node1
-    runs-on: node1
-    # needs: build
-    steps:
-      - name: Update runner's docker Version, as worker module requires it
-        run: |
-          docker --version
+  # node1:
+  #   name: Pull Image on node1
+  #   runs-on: node1
+  #   needs: build
+  #   steps:
+  #     - name: Update runner's docker Version, as worker module requires it
+  #       run: |
+  #         docker --version
       
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      # - name: Configure AWS Credentials
-      #   run: |
-      #     mkdir /home/ec2-user/.aws
-      #     echo "[default]" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
-      #     echo "[default]" >> /home/ec2-user/.aws/config
-      #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-      #     echo "output = json" >> /home/ec2-user/.aws/config
-        # uses: aws-actions/configure-aws-credentials@v1
-        # with:
-        #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        #   aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        #   aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        #   aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS Credentials
+  #       run: |
+  #         mkdir /home/ec2-user/.aws
+  #         echo "[default]" >> /home/ec2-user/.aws/credentials
+  #         echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+  #         echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+  #         echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+  #         echo "[default]" >> /home/ec2-user/.aws/config
+  #         echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+  #         echo "output = json" >> /home/ec2-user/.aws/config
+  #       # uses: aws-actions/configure-aws-credentials@v1
+  #       # with:
+  #       #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #       #   aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #       #   aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  #       #   aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: test 
-        run: |
-          cat /home/ec2-user/.docker/config.json
+  #     - name: copy to root
+  #       run: |
+  #         sudo mkdir /root/.docker
+  #         sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+  #         sudo cat /root/.docker/config.json
 
-      - name: cp
-        run: |
-          sudo cat /root/.docker/config.json
-
-      - name: Pull image
-        id: pull-image
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
-        run: |
-          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
+  #     - name: Pull image
+  #       id: pull-image
+  #       # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+  #       run: |
+  #         sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
   node2:
     name: Pull Image on node2
@@ -138,16 +136,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Configure AWS Credentials
-      #   run: |
-      #     mkdir /home/ec2-user/.aws
-      #     echo "[default]" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-      #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
-      #     echo "[default]" >> /home/ec2-user/.aws/config
-      #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-      #     echo "output = json" >> /home/ec2-user/.aws/config
+      - name: Configure AWS Credentials
+        run: |
+          # check .aws directory
+          if [ ! -d "/home/ec2-user/.aws" ]; then
+            # create the .aws directory
+            mkdir /home/ec2-user/.aws
+            
+            # configure aws credentials config
+            echo "[default]" >> /home/ec2-user/.aws/credentials
+            echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+            echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+            echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+            
+            echo "[default]" >> /home/ec2-user/.aws/config
+            echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+            echo "output = json" >> /home/ec2-user/.aws/config
+          else
+            echo ".aws directory already exists, skipping creation."
+          fi
         # uses: aws-actions/configure-aws-credentials@v1
         # with:
         #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
@@ -157,8 +164,24 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Check ECR
         run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 342942590686.dkr.ecr.us-east-1.amazonaws.com
+          cat /home/ec2-user/.docker/config.json
+
+      - name: copy to root
+        run: |
+          # check /root/.docker directory 
+          if [ ! -d "/root/.docker" ]; then
+            # create .docker directory
+            sudo mkdir /root/.docker
+
+            # copy config.json to /root/.docker/
+            sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+            sudo cat /root/.docker/config.json
+          else
+            echo "/root/.docker already exist, skipping section"
 
       - name: Pull image
         id: pull-image
@@ -166,22 +189,22 @@ jobs:
         run: |
           sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
 
-  deploy:
-    name: Deploy Application into docker swarm
-    runs-on: master
-    needs: 
-      # - master
-      - node1
-      - node2
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # deploy:
+  #   name: Deploy Application into docker swarm
+  #   runs-on: master
+  #   needs: 
+  #     # - master
+  #     - node1
+  #     - node2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Deploy application images to Docker Swarm
-        run: |
-          docker node ls
-          docker service ls
-          docker stack ls
-          docker stack rm stackdemo
-          sleep 30
-          docker stack deploy --compose-file docker-stack.yml stackdemo
+  #     - name: Deploy application images to Docker Swarm
+  #       run: |
+  #         docker node ls
+  #         docker service ls
+  #         docker stack ls
+  #         docker stack rm stackdemo
+  #         sleep 30
+  #         docker stack deploy --compose-file docker-stack.yml stackdemo
