@@ -118,10 +118,10 @@ jobs:
 
       - name: cp
         run: |
-          mkdir /home/root/.docker
-          cp /home/ec2-user/.docker/config.json /home/root/.docker/config.json
-          cat /home/root/.docker/config.json
-          
+          sudo mkdir /home/root/.docker
+          sudo cp /home/ec2-user/.docker/config.json /home/root/.docker/config.json
+          sudo cat /home/root/.docker/config.json
+
       - name: Pull image
         id: pull-image
         # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
