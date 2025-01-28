@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image
+  ECR_REPOSITORY: lks-voting-image
   ENV: "dev"
 
 permissions:
