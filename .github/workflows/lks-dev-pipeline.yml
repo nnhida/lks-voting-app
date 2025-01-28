@@ -182,6 +182,7 @@ jobs:
             sudo cat /root/.docker/config.json
           else
             echo "/root/.docker already exist, skipping section"
+          fi
 
       - name: Pull image
         id: pull-image
