@@ -32,17 +32,17 @@ jobs:
         # check .aws directory
         if [ ! -d "/home/ec2-user/.aws" ]; then
           # create the .aws directory
-          mkdir -p /home/ec2-user/.aws
+          sudo mkdir -p /home/ec2-user/.aws
           
           # configure aws credentials config
-          echo "[default]" >> /home/ec2-user/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-          echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+          sudo echo "[default]" >> /home/ec2-user/.aws/credentials
+          sudo echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+          sudo echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+          sudo echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
           
-          echo "[default]" >> /home/ec2-user/.aws/config
-          echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-          echo "output = json" >> /home/ec2-user/.aws/config
+          sudo echo "[default]" >> /home/ec2-user/.aws/config
+          sudo echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+          sudo echo "output = json" >> /home/ec2-user/.aws/config
         else
           echo ".aws directory already exists, skipping creation."
         fi
