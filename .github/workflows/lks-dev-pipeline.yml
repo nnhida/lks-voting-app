@@ -1,4 +1,4 @@
-name: deploy_to_dev.yml
+name: lks-dev-pipeline
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: voting-app
+  ECR_REPOSITORY: 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image
   ENV: "dev"
 
 permissions:
