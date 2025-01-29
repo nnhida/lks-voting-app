@@ -1,7 +1,7 @@
+note.txt
 *.pyc
 project.lock.json
 bin/
 obj/
 .vs/
 node_modules/
-note.txt
