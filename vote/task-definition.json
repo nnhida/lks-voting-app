@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "lks-vote-container",
-            "image": "342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-prod-latest",
+            "image": "342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-prod-latest",
             "cpu": 0,
             "portMappings": [
                 {
