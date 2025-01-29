@@ -1,4 +1,4 @@
-name: lks
+name: lks-dev-pipeline
 
 on:
   push:
@@ -121,35 +121,35 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
-        run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
-
-      # - name: copy to root
-      #   run: |
-      #     # check /root/.docker directory 
-      #     if [ ! -d "/root/.docker" ]; then
-      #       # create .docker directory
-      #       sudo mkdir -p /root/.docker
-
-      #       # copy config.json to /root/.docker/
-      #       sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-      #       sudo cat /root/.docker/config.json
-      #     else
-      #       echo "/root/.docker already exist, skipping section"
-      #     fi
-
       # - name: Pull image
       #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+      #     VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
       #   # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
       #   run: |
-      #     sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
+
+      - name: copy to root
+        run: |
+          # check /root/.docker directory 
+          if [ ! -d "/root/.docker" ]; then
+            # create .docker directory
+            sudo mkdir -p /root/.docker
+
+            # copy config.json to /root/.docker/
+            sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+            sudo cat /root/.docker/config.json
+          else
+            echo "/root/.docker already exist, skipping section"
+          fi
+
+      - name: Pull image
+        id: pull-image
+        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+        run: |
+          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
 
   node2:
     name: Pull Image on node2
@@ -193,35 +193,35 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
-        run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
-
-      # - name: copy to root
-      #   run: |
-      #     # check /root/.docker directory 
-      #     if [ ! -d "/root/.docker" ]; then
-      #       # create .docker directory
-      #       sudo mkdir -p /root/.docker
-
-      #       # copy config.json to /root/.docker/
-      #       sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-      #       sudo cat /root/.docker/config.json
-      #     else
-      #       echo "/root/.docker already exist, skipping section"
-      #     fi
-
       # - name: Pull image
       #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+      #     VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
       #   # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
       #   run: |
-      #     sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
+
+      - name: copy to root
+        run: |
+          # check /root/.docker directory 
+          if [ ! -d "/root/.docker" ]; then
+            # create .docker directory
+            sudo mkdir -p /root/.docker
+
+            # copy config.json to /root/.docker/
+            sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+            sudo cat /root/.docker/config.json
+          else
+            echo "/root/.docker already exist, skipping section"
+          fi
+
+      - name: Pull image
+        id: pull-image
+        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+        run: |
+          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
 
   deploy:
     name: Deploy Application into docker swarm
