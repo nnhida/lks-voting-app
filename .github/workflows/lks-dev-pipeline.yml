@@ -39,7 +39,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        VOTE_: vote-${{ env.ENV }}-latest
+        VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f vote/Dockerfile ./vote
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
