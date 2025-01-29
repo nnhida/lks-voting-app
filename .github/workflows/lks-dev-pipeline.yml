@@ -39,18 +39,18 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
+        RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f vote/Dockerfile ./vote
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
-        echo "::set-output name=vote::$ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG"
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f result/Dockerfile ./result
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
+        echo "::set-output name=result::$ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG"
 
   master:
     name: Pull Image on master
     runs-on: master
     needs: build
     steps:
-      - name: Update runner's docker Version, as vote module requires it
+      - name: Update runner's docker Version, as result module requires it
         run: |
           docker --version
       
@@ -74,17 +74,17 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+          RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
+        # Build docker images for result module and push it to ECR so that it can be deployed to EKS
         run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
   node1:
     name: Pull Image on node1
     runs-on: node1
     needs: build
     steps:
-      - name: Update runner's docker Version, as vote module requires it
+      - name: Update runner's docker Version, as result module requires it
         run: |
           docker --version
       
@@ -126,10 +126,10 @@ jobs:
       #   env:
       #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-      #     VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
-      #   # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+      #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
+      #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
       #   run: |
-      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
       - name: copy to root
         run: |
@@ -147,16 +147,16 @@ jobs:
 
       - name: Pull image
         id: pull-image
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+        # Build docker images for result module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
+          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
 
   node2:
     name: Pull Image on node2
     runs-on: node2
     needs: build
     steps:
-      - name: Update runner's docker Version, as vote module requires it
+      - name: Update runner's docker Version, as result module requires it
         run: |
           docker --version
       
@@ -198,10 +198,10 @@ jobs:
       #   env:
       #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-      #     VOTE_IMAGE_TAG: vote-${{ env.ENV }}-latest
-      #   # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+      #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
+      #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
       #   run: |
-      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$VOTE_IMAGE_TAG
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
       - name: copy to root
         run: |
@@ -219,9 +219,9 @@ jobs:
 
       - name: Pull image
         id: pull-image
-        # Build docker images for vote module and push it to ECR so that it can be deployed to EKS
+        # Build docker images for result module and push it to ECR so that it can be deployed to EKS
         run: |
-          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:vote-dev-latest
+          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
 
   deploy:
     name: Deploy Application into docker swarm
