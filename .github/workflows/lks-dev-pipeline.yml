@@ -79,157 +79,157 @@ jobs:
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
-  node1:
-    name: Pull Image on node1
-    runs-on: node1
-    needs: build
-    steps:
-      - name: Update runner's docker Version, as result module requires it
-        run: |
-          docker --version
+  # node1:
+  #   name: Pull Image on node1
+  #   runs-on: node1
+  #   needs: build
+  #   steps:
+  #     - name: Update runner's docker Version, as result module requires it
+  #       run: |
+  #         docker --version
       
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        # run: |
-        #   # check .aws directory
-        #   if [ ! -d "/home/ec2-user/.aws" ]; then
-        #     # create the .aws directory
-        #     mkdir -p /home/ec2-user/.aws
+  #     - name: Configure AWS Credentials
+  #       # run: |
+  #       #   # check .aws directory
+  #       #   if [ ! -d "/home/ec2-user/.aws" ]; then
+  #       #     # create the .aws directory
+  #       #     mkdir -p /home/ec2-user/.aws
             
-        #     # configure aws credentials config
-        #     echo "[default]" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+  #       #     # configure aws credentials config
+  #       #     echo "[default]" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
             
-        #     echo "[default]" >> /home/ec2-user/.aws/config
-        #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-        #     echo "output = json" >> /home/ec2-user/.aws/config
-        #   else
-        #     echo ".aws directory already exists, skipping creation."
-        #   fi
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
+  #       #     echo "[default]" >> /home/ec2-user/.aws/config
+  #       #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+  #       #     echo "output = json" >> /home/ec2-user/.aws/config
+  #       #   else
+  #       #     echo ".aws directory already exists, skipping creation."
+  #       #   fi
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Pull image
-      #   id: pull-image
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-      #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
-      #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
-      #   run: |
-      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
+  #     # - name: Pull image
+  #     #   id: pull-image
+  #     #   env:
+  #     #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #     #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+  #     #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
+  #     #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
+  #     #   run: |
+  #     #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
-      - name: copy to root
-        run: |
-          # check /root/.docker directory 
-          if [ ! -d "/root/.docker" ]; then
-            # create .docker directory
-            sudo mkdir -p /root/.docker
+  #     - name: copy to root
+  #       run: |
+  #         # check /root/.docker directory 
+  #         if [ ! -d "/root/.docker" ]; then
+  #           # create .docker directory
+  #           sudo mkdir -p /root/.docker
 
-            # copy config.json to /root/.docker/
-            sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-            sudo cat /root/.docker/config.json
-          else
-            echo "/root/.docker already exist, skipping section"
-          fi
+  #           # copy config.json to /root/.docker/
+  #           sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+  #           sudo cat /root/.docker/config.json
+  #         else
+  #           echo "/root/.docker already exist, skipping section"
+  #         fi
 
-      - name: Pull image
-        id: pull-image
-        # Build docker images for result module and push it to ECR so that it can be deployed to EKS
-        run: |
-          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
+  #     - name: Pull image
+  #       id: pull-image
+  #       # Build docker images for result module and push it to ECR so that it can be deployed to EKS
+  #       run: |
+  #         sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
 
-  node2:
-    name: Pull Image on node2
-    runs-on: node2
-    needs: build
-    steps:
-      - name: Update runner's docker Version, as result module requires it
-        run: |
-          docker --version
+  # node2:
+  #   name: Pull Image on node2
+  #   runs-on: node2
+  #   needs: build
+  #   steps:
+  #     - name: Update runner's docker Version, as result module requires it
+  #       run: |
+  #         docker --version
       
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        # run: |
-        #   # check .aws directory
-        #   if [ ! -d "/home/ec2-user/.aws" ]; then
-        #     # create the .aws directory
-        #     mkdir -p /home/ec2-user/.aws
+  #     - name: Configure AWS Credentials
+  #       # run: |
+  #       #   # check .aws directory
+  #       #   if [ ! -d "/home/ec2-user/.aws" ]; then
+  #       #     # create the .aws directory
+  #       #     mkdir -p /home/ec2-user/.aws
             
-        #     # configure aws credentials config
-        #     echo "[default]" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
-        #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
+  #       #     # configure aws credentials config
+  #       #     echo "[default]" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY }}" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY }}" >> /home/ec2-user/.aws/credentials
+  #       #     echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/.aws/credentials
             
-        #     echo "[default]" >> /home/ec2-user/.aws/config
-        #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
-        #     echo "output = json" >> /home/ec2-user/.aws/config
-        #   else
-        #     echo ".aws directory already exists, skipping creation."
-        #   fi
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
+  #       #     echo "[default]" >> /home/ec2-user/.aws/config
+  #       #     echo "region = ${{ env.AWS_REGION }}" >> /home/ec2-user/.aws/config
+  #       #     echo "output = json" >> /home/ec2-user/.aws/config
+  #       #   else
+  #       #     echo ".aws directory already exists, skipping creation."
+  #       #   fi
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Pull image
-      #   id: pull-image
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-      #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
-      #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
-      #   run: |
-      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
+  #     # - name: Pull image
+  #     #   id: pull-image
+  #     #   env:
+  #     #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #     #     ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+  #     #     RESULT_IMAGE_TAG: result-${{ env.ENV }}-latest
+  #     #   # Build docker images for result module and push it to ECR so that it can be deployed to EKS
+  #     #   run: |
+  #     #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$RESULT_IMAGE_TAG
 
-      - name: copy to root
-        run: |
-          # check /root/.docker directory 
-          if [ ! -d "/root/.docker" ]; then
-            # create .docker directory
-            sudo mkdir -p /root/.docker
+  #     - name: copy to root
+  #       run: |
+  #         # check /root/.docker directory 
+  #         if [ ! -d "/root/.docker" ]; then
+  #           # create .docker directory
+  #           sudo mkdir -p /root/.docker
 
-            # copy config.json to /root/.docker/
-            sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-            sudo cat /root/.docker/config.json
-          else
-            echo "/root/.docker already exist, skipping section"
-          fi
+  #           # copy config.json to /root/.docker/
+  #           sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+  #           sudo cat /root/.docker/config.json
+  #         else
+  #           echo "/root/.docker already exist, skipping section"
+  #         fi
 
-      - name: Pull image
-        id: pull-image
-        # Build docker images for result module and push it to ECR so that it can be deployed to EKS
-        run: |
-          sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
+  #     - name: Pull image
+  #       id: pull-image
+  #       # Build docker images for result module and push it to ECR so that it can be deployed to EKS
+  #       run: |
+  #         sudo -E docker pull 342942590686.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
 
   deploy:
     name: Deploy Application into docker swarm
     runs-on: master
     needs: 
       - master
-      - node1
-      - node2
+      # - node1
+      # - node2
     steps:
       - name: Checkout
         uses: actions/checkout@v3
