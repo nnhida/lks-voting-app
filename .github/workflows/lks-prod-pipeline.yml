@@ -8,10 +8,10 @@ on:
 env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-image
-  ECS_SERVICE_WORK: lks-work-service         
+  ECS_SERVICE_WORKER: lks-worker-service         
   ECS_CLUSTER: lks-voting-cluster
-  WORK_TASK_DEFINITION: work/task-definition.json
-  WORK_CONTAINER_NAME: lks-work-container
+  WORKER_TASK_DEFINITION: worker/task-definition.json
+  WORKER_CONTAINER_NAME: lks-worker-container
   ENV: "prod"
 
 permissions:
@@ -47,11 +47,11 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        WORK_IMAGE_TAG: work-${{ env.ENV }}-latest
+        WORKER_IMAGE_TAG: worker-${{ env.ENV }}-latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$WORK_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f work/Dockerfile ./work
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$WORK_IMAGE_TAG
-        echo "::set-output name=work_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORK_IMAGE_TAG"
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$worker_IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f worker/Dockerfile ./worker
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG
+        echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$WORKER_IMAGE_TAG"
 
   deploy:
     name: Deploy to ECS and Notify
@@ -68,7 +68,7 @@ jobs:
 
       - name: Update ECS Task Definition
         run: |
-          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_WORK }} --force-new-deployment
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_WORKER }} --force-new-deployment
 
       - name: Send Notification
         run: |
