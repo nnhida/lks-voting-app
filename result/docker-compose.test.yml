@@ -45,12 +45,12 @@ services:
       - back-tier
 
   db:
-    image: postgres:15
+    image: postgres:16
     ports: 
       - "5432:5432"
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: "lksadmin"
+      POSTGRES_PASSWORD: "LKSNCC2024"
     volumes:
       - "db-data:/var/lib/postgresql/data"
     networks:
