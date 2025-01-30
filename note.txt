@@ -1,28 +1,5 @@
 docker swarm join --token SWMTKN-1-1j4s3tget1zwzps9nqkr9pap8o0udqmqlgdlx7nhpxloxlp0mt-d4gmgy2kk424cre1x6tuoe7sj 192.168.10.43:2377
 
-./config.sh --url https://github.com/nnhida/lks-voting-app --token BKFOP2KRE4PJGAOB5DAWS7LHTBOEI
-
-#!/bin/bash
-sudo -u ec2-user -i << 'EOF'
-sudo yum update -y
-sudo yum install docker dotnet-sdk-6.0 -y 
-sudo usermod -aG docker ec2-user
-sudo systemctl enable docker 
-sudo systemctl start docker 
-sudo docker swarm join --token SWMTKN-1-4u566x9qguq39zm0zflhqxihtr462htqfr8faj8f1mb2fa7czz-22xvmib817nwot7nf5gmze4mj 192.168.10.43:2377
-mkdir actions-runner && cd actions-runner
-curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
-echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | sha256sum -c
-tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
-./config.sh --url https://github.com/nnhida/lks-voting-app \
-            --token BKFOP2KDZUKXRNU4G6VWSF3HTCIOE \
-            --name "node1" \
-            --labels "node1" \
-            --unattended \
-            --replace
-./run.sh
-EOF
-
 #!/bin/bash
 sudo -u ec2-user -i << 'EOF'
 sudo yum update -y
@@ -43,3 +20,47 @@ tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
             --replace
 ./run.sh
 EOF
+
+#!/bin/bash
+# Simpan user data ke file agar bisa dijalankan ulang
+cat << 'EOF' > /usr/local/bin/userdata.sh
+#!/bin/bash
+sudo yum update -y
+sudo yum install docker dotnet-sdk-6.0 -y 
+sudo usermod -aG docker ec2-user
+sudo systemctl enable docker 
+sudo systemctl start docker 
+
+# Join Docker Swarm
+sudo docker swarm join --token SWMTKN-1-4u566x9qguq39zm0zflhqxihtr462htqfr8faj8f1mb2fa7czz-22xvmib817nwot7nf5gmze4mj 192.168.10.43:2377
+
+# Setup GitHub Actions Runner
+mkdir -p /home/ec2-user/actions-runner
+cd /home/ec2-user/actions-runner
+curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
+echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | sha256sum -c
+tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
+
+# Configure runner
+./config.sh --url https://github.com/nnhida/lks-voting-app \
+            --token BKFOP2OGLB6QD2GH2MLMFETHTCJC2 \
+            --name "node2" \
+            --labels "node2" \
+            --unattended \
+            --replace
+
+# Jalankan runner
+./run.sh
+EOF
+
+# Berikan permission agar script bisa dieksekusi
+chmod +x /usr/local/bin/userdata.sh
+
+# Tambahkan cron job agar script berjalan setiap reboot
+(crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/userdata.sh") | crontab -
+
+lks-redis-001.lks-redis.4z141i.use1.cache.amazonaws.com
+
+src/valkey-cli -c -h master.lks-redis.4z141i.use1.cache.amazonaws.com -p 6379
+
+psql -h lks-rds.ckb2qs0we42t.us-east-1.rds.amazonaws.com -p 5432 -U lksadmin -d lksdb
