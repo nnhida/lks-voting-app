@@ -75,7 +75,7 @@ jobs:
         id: pull-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ ECR_REPOSITORY }}
+          ECR_REPOSITORY: lks-voting-image
           IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
@@ -108,7 +108,7 @@ jobs:
         id: pull-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ ECR_REPOSITORY }}
+          ECR_REPOSITORY: lks-voting-image
           IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
@@ -141,7 +141,7 @@ jobs:
         id: pull-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ ECR_REPOSITORY }}
+          ECR_REPOSITORY: lks-voting-image
           IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
