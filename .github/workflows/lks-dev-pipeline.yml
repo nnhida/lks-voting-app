@@ -1,4 +1,4 @@
-name: Example Build Image
+name: lks-dev-pipeline
 
 on:
   push:
@@ -39,11 +39,11 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: result-${{ env.ENV }}-latest
+        IMAGE_TAG: vote-${{ env.ENV }}-latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f result/Dockerfile ./result
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f vote/Dockerfile ./vote
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=result_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=vote_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: End Build
       run: echo "Build Success"
@@ -53,7 +53,7 @@ jobs:
     runs-on: master
     needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as vote module requires it
         run: |
           docker --version
 
@@ -77,16 +77,16 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: lks-voting-image
-          IMAGE_TAG: result-${{ env.ENV }}-latest
+          IMAGE_TAG: vote-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
 
   node1:
     name: Pull Image on node1
     runs-on: node1
-    needs: master
+    needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as vote module requires it
         run: |
           docker --version
 
@@ -110,16 +110,16 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: lks-voting-image
-          IMAGE_TAG: result-${{ env.ENV }}-latest
+          IMAGE_TAG: vote-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
 
   node2:
     name: Pull Image on node2
     runs-on: node2
-    needs: master
+    needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as vote module requires it
         run: |
           docker --version
 
@@ -143,7 +143,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: lks-voting-image
-          IMAGE_TAG: result-${{ env.ENV }}-latest
+          IMAGE_TAG: vote-${{ env.ENV }}-latest
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
