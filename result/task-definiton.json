@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "result-container",
-            "image": "225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-result-image:vote-prod-latest",
+            "image": "225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-prod-latest",
             "cpu": 1024,
             "memory": 3072,
             "memoryReservation": 1024,
