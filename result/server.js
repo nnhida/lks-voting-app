@@ -17,8 +17,8 @@ io.on('connection', function (socket) {
   });
 });
 
-var pool = new Pool({
-  connectionString: 'postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb'
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb'
 });
 
 async.retry(
