@@ -18,7 +18,7 @@ io.on('connection', function (socket) {
 });
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb'
+  connectionString: 'postgres://postgres:postgres@db/postgres'
 });
 
 async.retry(

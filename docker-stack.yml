@@ -5,10 +5,21 @@
 version: "3.9"
 
 services:
+
   redis:
     image: redis:alpine
     networks:
       - frontend
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
 
   vote:
     image: dockersamples/examplevotingapp_vote
@@ -18,8 +29,6 @@ services:
       - frontend
     deploy:
       replicas: 3
-    environment:
-      DATABASE_URL: "postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb"
 
   result:
     image: dockersamples/examplevotingapp_result
@@ -29,8 +38,6 @@ services:
       - backend
     deploy:
       replicas: 3
-    environment:
-      DATABASE_URL: "postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb"
 
   worker:
     image: dockersamples/examplevotingapp_worker
@@ -39,9 +46,10 @@ services:
       - backend
     deploy:
       replicas: 3
-    environment:
-      DATABASE_URL: "postgres://adminlks:adminlkspassword@lksrds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com/lksdb"
 
 networks:
   frontend:
   backend:
+
+volumes:
+  db-data:

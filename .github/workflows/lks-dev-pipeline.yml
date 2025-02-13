@@ -148,7 +148,7 @@ jobs:
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   deploy:  
-    name: Example Deploy Application into docker swarm
+    name: Deploy Application into docker swarm
     runs-on: master
     needs:
       - master
