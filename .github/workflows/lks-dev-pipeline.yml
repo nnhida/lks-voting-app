@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1                 
-  ECR_REPOSITORY: lks-voting-image 
+  ECR_REPOSITORY: voting-app 
   ENV: "prod"
 
 permissions:
@@ -72,14 +72,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
   
+      # - name: Pull image
+      #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: voting-app
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
+      #   run: |
+      #     sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
       - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: voting-app
-          IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
-          sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo mkdir /root/.docker
+          sudo touch /root/.docker/config.json
+          sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:latest
 
   node1:
     name: Pull Image
@@ -105,14 +112,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
   
+      # - name: Pull image
+      #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: voting-app
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
+      #   run: |
+      #     sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
       - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: voting-app
-          IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
-          sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo mkdir /root/.docker
+          sudo touch /root/.docker/config.json
+          sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:latest
 
   node2:
     name: Pull Image
@@ -138,14 +152,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
   
+      # - name: Pull image
+      #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: voting-app
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
+      #   run: |
+      #     sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
       - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: voting-app
-          IMAGE_TAG: worker-${{ env.ENV }}-latest
         run: |
-          sudo -E docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo mkdir /root/.docker
+          sudo touch /root/.docker/config.json
+          sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
+          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:latest
 
   deploy:  
     name: Deploy Application into docker swarm
