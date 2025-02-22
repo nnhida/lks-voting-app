@@ -125,7 +125,7 @@ jobs:
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 225888318981.dkr.ecr.us-east-1.amazonaws.com
           sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:latest
+          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:${{ env.SERVICE}}-${{ env.ENV }}-latest
 
   node2:
     name: Pull Image
@@ -164,7 +164,7 @@ jobs:
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 225888318981.dkr.ecr.us-east-1.amazonaws.com
           sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
-          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:latest
+          sudo -E docker pull 225888318981.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:${{ env.SERVICE}}-${{ env.ENV }}-latest
 
   deploy:  
     name: Deploy Application into docker swarm
