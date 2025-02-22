@@ -10,10 +10,10 @@ env:
   ECR_REPOSITORY: lks-voting-image
   ENV: "prod"
   SERVICE: "vote" 
-  ECS_SERVICE: lks-worker-service          
+  ECS_SERVICE: lks-vote-service          
   ECS_CLUSTER: lks-voting-cluster
-  TASK_DEFINITION: worker/task-definition.json
-  CONTAINER_NAME: lks-worker-container
+  TASK_DEFINITION: vote/task-definition.json
+  CONTAINER_NAME: lks-vote-container
 
 permissions:
   id-token: write
