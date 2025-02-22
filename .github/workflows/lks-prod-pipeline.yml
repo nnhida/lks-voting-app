@@ -14,7 +14,6 @@ env:
   ECS_CLUSTER: lks-voting-cluster
   TASK_DEFINITION: worker/task-definition.json
   CONTAINER_NAME: lks-worker-container
-  ENV: "prod"
 
 permissions:
   id-token: write
@@ -58,6 +57,7 @@ jobs:
     name: Deploy Application to Production
     runs-on: ubuntu-latest
     environment: Production
+    needs: build
     steps:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
