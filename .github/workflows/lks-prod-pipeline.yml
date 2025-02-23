@@ -9,11 +9,11 @@ env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-image
   ENV: "prod"
-  SERVICE: "vote" 
-  ECS_SERVICE: lks-vote-service          
+  SERVICE: "result" 
+  ECS_SERVICE: lks-result-service          
   ECS_CLUSTER: lks-voting-cluster
-  TASK_DEFINITION: lks-td-vote
-  CONTAINER_NAME: lks-vote-container
+  TASK_DEFINITION: lks-td-result
+  CONTAINER_NAME: lks-result-container
 
 permissions:
   id-token: write
