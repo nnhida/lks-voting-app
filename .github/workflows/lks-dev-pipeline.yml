@@ -9,7 +9,7 @@ env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-image
   ENV: "dev"
-  SERVICE: "vote"
+  SERVICE: "result"
 
 permissions:
   id-token: write
