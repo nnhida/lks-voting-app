@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-image
-  ENV: "prod"
+  ENV: "dev"
   SERVICE: "worker"
 
 permissions:
