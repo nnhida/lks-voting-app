@@ -38,6 +38,11 @@ services:
       - backend
     deploy:
       replicas: 3
+    environment:
+      POSTGRES_USER: "adminlks"
+      POSTGRES_PASSWORD: "LKSNCC2024"
+      POSTGRES_HOST: "lks-rds.c0f75rlqxhpi.us-east-1.rds.amazonaws.com"
+      POSTGRES_DB: "lksdb"
 
   worker:
     image: dockersamples/examplevotingapp_worker
