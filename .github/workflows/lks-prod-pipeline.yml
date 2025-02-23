@@ -12,7 +12,7 @@ env:
   SERVICE: "vote" 
   ECS_SERVICE: lks-vote-service          
   ECS_CLUSTER: lks-voting-cluster
-  TASK_DEFINITION: /home/ec2-user/environment/lks-voting-app/vote/task-definition
+  TASK_DEFINITION: /home/ec2-user/environment/lks-voting-app/vote/task-definition.json
   CONTAINER_NAME: lks-vote-container
 
 permissions:
