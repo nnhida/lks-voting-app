@@ -1,3 +1,5 @@
+const path = require('path');
+
 var express = require('express'),
     async = require('async'),
     { Pool } = require('pg'),
