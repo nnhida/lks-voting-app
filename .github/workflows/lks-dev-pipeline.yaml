@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1                 
-  ECR_REPOSITORY: lks-voting-app 
+  ECR_REPOSITORY: lks-voting-image 
   ENV: "dev"
 
 permissions:
