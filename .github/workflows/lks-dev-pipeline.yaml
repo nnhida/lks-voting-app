@@ -3,12 +3,12 @@ name: lks-dev-pipeline
 on:
   push:
     branches:
-      - "prod"
+      - "dev"
 
 env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-app 
-  ENV: "prod"
+  ENV: "dev"
 
 permissions:
   id-token: write
@@ -16,9 +16,9 @@ permissions:
 
 jobs:
   build:
-    name: Build Image Production
+    name: Build Image Development
     runs-on: ubuntu-latest
-    environment: Production
+    environment: Development
     steps:
     - name: Checkout
       uses: actions/checkout@v3
