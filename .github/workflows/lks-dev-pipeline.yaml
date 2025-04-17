@@ -105,14 +105,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
   
-      - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: worker-${{ env.ENV }}-latest
+      # - name: Pull image
+      #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
         
+      #   run: |
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Copy to Root
         run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo mkdir /home/root/.docker/
+          sudo cp /home/ec2-user/.docker/config.json >> /home/root/.docker/config.json
+          
+      - name: Pull Image
+        run: |
+         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
           
   node2:
     name: Pull Image on
@@ -138,14 +146,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
   
-      - name: Pull image
-        id: pull-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: worker-${{ env.ENV }}-latest
+      # - name: Pull image
+      #   id: pull-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
         
+      #   run: |
+      #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Copy to Root
         run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo mkdir /home/root/.docker/
+          sudo cp /home/ec2-user/.docker/config.json >> /home/root/.docker/config.json
+          
+      - name: Pull Image
+        run: |
+         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
           
   deploy:  
     name: Example Deploy Application into docker swarm
@@ -160,9 +176,9 @@ jobs:
 
       - name: Deploy application images to Docker Swarm
         run: |
-          docker node ls
-          docker service ls
-          docker stack ls
-          docker stack rm stackdemo
+          sudo docker node ls
+          sudo docker service ls
+          sudo docker stack ls
+          sudo docker stack rm stackdemo
           sleep 30
           docker stack deploy --compose-file docker-stack.yml stackdemo
