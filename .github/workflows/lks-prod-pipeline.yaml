@@ -9,10 +9,10 @@ env:
   AWS_REGION: us-east-1                 
   ECR_REPOSITORY: lks-voting-image
   ENV: "prod"
-  ECS_SERVICE: lks-vote-service         
+  ECS_SERVICE: lks-result-service         
   ECS_CLUSTER: lks-voting-cluster
-  TASK_DEFINITION: vote/task-definition.json
-  CONTAINER_NAME: lks-vote-container
+  TASK_DEFINITION: result/task-definition.json
+  CONTAINER_NAME: lks-result-container
 
 permissions:
   id-token: write
@@ -35,7 +35,7 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Login to Amazon ECR
+    - name: Login to Amazon ECRre
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
@@ -43,11 +43,11 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: vote-${{ env.ENV }}-latest
+        IMAGE_TAG: result-${{ env.ENV }}-latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f vote/Dockerfile ./vote
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f result/Dockerfile ./result
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=vote_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=result_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: End Build
       run: echo "Build Success"
@@ -77,22 +77,22 @@ jobs:
       id: set-vars
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: vote-${{ env.ENV }}-latest
+        IMAGE_TAG: result-${{ env.ENV }}-latest
       run: |
-        echo "::set-output name=vote_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=result_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def-vote
+      id: task-def-result
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.set-vars.outputs.vote_image }}
+        image: ${{ steps.set-vars.outputs.result_image }}
 
-    - name: Deploy Amazon ECS task definition vote
+    - name: Deploy Amazon ECS task definition result
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def-vote.outputs.task-definition }}
+        task-definition: ${{ steps.task-def-result.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
