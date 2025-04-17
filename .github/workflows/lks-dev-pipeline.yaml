@@ -115,8 +115,7 @@ jobs:
       #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Copy to Root
         run: |
-          sudo mkdir /root/.docker
-          sudo cp /home/ec2-user/.docker/config.json >> /root/.docker/config.json
+          sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
           
       - name: Pull Image
         run: |
@@ -156,8 +155,7 @@ jobs:
       #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Copy to Root
         run: |
-          sudo mkdir /root/.docker/
-          sudo cp /home/ec2-user/.docker/config.json >> /root/.docker/config.json
+          sudo cp /home/ec2-user/.docker/config.json /root/.docker/config.json
           
       - name: Pull Image
         run: |
