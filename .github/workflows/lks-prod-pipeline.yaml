@@ -52,7 +52,7 @@ jobs:
     - name: End Build
       run: echo "Build Success"
       
-deploy:
+  deploy:
     name: Example Deploy Application to Production
     runs-on: ubuntu-latest
     environment: Production
@@ -95,3 +95,8 @@ deploy:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+    
+    - name: Publish Message To SNS Subscribers
+      env:
+        TOPIC_ARN: ${{ secrets.AWS_SNS_ARN }}
+      run: aws sns publish --topic-arn $TOPIC_ARN --subject "Helo from Kota Malang!" --message "New version The Voting App from Kota Malang is Released !!"
