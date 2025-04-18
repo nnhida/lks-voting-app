@@ -39,11 +39,11 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: result-${{ env.ENV }}-latest
+        IMAGE_TAG: worker-${{ env.ENV }}-latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f result/Dockerfile ./result
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg aws_region=${{ env.AWS_REGION }} --build-arg copy_or_mount="copy" -f worker/Dockerfile ./worker
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=result_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=worker_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: End Build
       run: echo "Build Success"
@@ -53,7 +53,7 @@ jobs:
     runs-on: master
     needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as worker module requires it
         run: |
           docker --version
 
@@ -76,7 +76,7 @@ jobs:
         id: pull-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: result-${{ env.ENV }}-latest
+          IMAGE_TAG: worker-${{ env.ENV }}-latest
         
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -86,7 +86,7 @@ jobs:
     runs-on: node1
     needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as worker module requires it
         run: |
           docker --version
 
@@ -109,7 +109,7 @@ jobs:
       #   id: pull-image
       #   env:
       #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     IMAGE_TAG: result-${{ env.ENV }}-latest
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
         
       #   run: |
       #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -119,14 +119,14 @@ jobs:
           
       - name: Pull Image
         run: |
-         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
+         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
           
   node2:
     name: Pull Image on Node2
     runs-on: node2
     needs: build
     steps:
-      - name: Update runner's docker Version, as result module requires it
+      - name: Update runner's docker Version, as worker module requires it
         run: |
           docker --version
 
@@ -149,7 +149,7 @@ jobs:
       #   id: pull-image
       #   env:
       #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     IMAGE_TAG: result-${{ env.ENV }}-latest
+      #     IMAGE_TAG: worker-${{ env.ENV }}-latest
         
       #   run: |
       #     docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -159,7 +159,7 @@ jobs:
           
       - name: Pull Image
         run: |
-         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:result-dev-latest
+         sudo -E docker pull 557886231982.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:worker-dev-latest
           
   deploy:  
     name: Deploy Application into docker swarm
